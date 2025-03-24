@@ -1,0 +1,49 @@
+package main
+
+import (
+	"fmt"
+	"log"
+)
+
+type CurrencyData struct {
+	Rates map[string]float64
+}
+
+func getExchangeRates(baseCurrency string) (CurrencyData, error) {
+	rates := map[string]float64{
+		"EUR": 0.92,
+		"INR": 75.0,
+		"GBP": 0.75,
+	}
+
+	data := CurrencyData{Rates: rates}
+	return data, nil
+}
+
+func convertCurrency(amount float64, fromCurrency, toCurrency string) (float64, error) {
+	data, err := getExchangeRates(fromCurrency)
+	if err != nil {
+		return 0, err
+	}
+
+	rate, exists := data.Rates[toCurrency]
+	if !exists {
+		return 0, fmt.Errorf("currency %s not found", toCurrency)
+	}
+
+	convertedAmount := amount * rate
+	return convertedAmount, nil
+}
+
+func main() {
+	amount := 250.00
+	fromCurrency := "USD"
+	toCurrency := "EUR"
+
+	convertedAmount, err := convertCurrency(amount, fromCurrency, toCurrency)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%.2f %s is equal to %.2f %s\n", amount, fromCurrency, convertedAmount, toCurrency)
+}
